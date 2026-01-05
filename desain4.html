@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Wedding of Diana & Ikbal | Anime Edition</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts: M PLUS Rounded (Anime Subtitle), Bangers (Comic SFX) -->
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Anime.js (Optional for complex animations, but we'll use CSS/JS for simplicity) -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --anime-blue: #3B82F6;
+            --anime-pink: #F472B6;
+            --anime-dark: #1E293B;
+            --ui-bg: rgba(30, 41, 59, 0.9);
+        }
+
+        body {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            background-color: #E0F2FE;
+            color: var(--anime-dark);
+            overflow-x: hidden;
+            /* Background Langit Anime */
+            background-image: linear-gradient(to bottom, #60A5FA, #E0F2FE);
+            min-height: 100vh;
+        }
+
+        /* --- ANIME SKY CLOUDS --- */
+        .cloud {
+            position: fixed; background: #fff; border-radius: 100px;
+            box-shadow: 0 8px 5px rgba(0,0,0,0.1); opacity: 0.8; z-index: -1;
+            animation: floatCloud linear infinite;
+        }
+        .cloud::after, .cloud::before {
+            content: ''; position: absolute; background: #fff; z-index: -1;
+        }
+        .cloud::after { width: 40px; height: 40px; top: -20px; left: 20px; border-radius: 100px; }
+        .cloud::before { width: 50px; height: 50px; top: -30px; right: 20px; border-radius: 200px; }
+        
+        @keyframes floatCloud { from { transform: translateX(100vw); } to { transform: translateX(-150px); } }
+
+        /* --- SAKURA FALLING EFFECT --- */
+        .sakura {
+            position: absolute; background-color: #ffc0cb;
+            border-radius: 100% 0 100% 0; opacity: 0.8; z-index: 10;
+            animation: fall-sakura linear infinite;
+        }
+        @keyframes fall-sakura {
+            0% { top: -10%; transform: rotate(0deg) translateX(0); }
+            100% { top: 100%; transform: rotate(360deg) translateX(100px); }
+        }
+
+        /* --- UI COMPONENTS (VISUAL NOVEL STYLE) --- */
+        .vn-box {
+            background: var(--ui-bg); border: 4px solid #fff; border-radius: 16px;
+            box-shadow: 0 10px 0 rgba(0,0,0,0.2); color: white;
+            position: relative; overflow: hidden;
+        }
+        
+        .vn-name-tag {
+            background: var(--anime-pink); padding: 5px 20px;
+            border-radius: 8px 8px 0 0; display: inline-block;
+            font-weight: 800; font-size: 1.1rem; border: 2px solid white; border-bottom: none;
+            position: absolute; top: -35px; left: 20px;
+        }
+
+        .triangle-next {
+            width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent;
+            border-top: 15px solid white; position: absolute; bottom: 15px; right: 15px;
+            animation: bounce 1s infinite; cursor: pointer;
+        }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+
+        /* --- START SCREEN --- */
+        #start-screen {
+            position: fixed; inset: 0; z-index: 9999;
+            background: linear-gradient(135deg, #60A5FA 0%, #2563EB 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        
+        .anime-title {
+            font-family: 'Bangers', cursive;
+            font-size: 4rem; color: white;
+            text-shadow: 4px 4px 0px #F472B6, 8px 8px 0px #000;
+            transform: rotate(-5deg); animation: popTitle 2s infinite alternate;
+        }
+        @keyframes popTitle { 0% { transform: rotate(-5deg) scale(1); } 100% { transform: rotate(-3deg) scale(1.05); } }
+
+        .start-btn {
+            background: #F472B6; color: white; font-weight: 800;
+            padding: 15px 40px; font-size: 1.5rem; border-radius: 50px;
+            border: 4px solid white; box-shadow: 0 6px 0 #BE185D;
+            transition: transform 0.1s, box-shadow 0.1s; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+        .start-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #BE185D; }
+
+        /* --- CHARACTER CARD (RPG STYLE) --- */
+        .char-card {
+            background: white; border-radius: 20px; overflow: hidden;
+            border: 4px solid var(--anime-dark); box-shadow: 10px 10px 0 rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .char-card:hover { transform: translateY(-10px) rotate(2deg); }
+        
+        .stat-bar { height: 12px; background: #e2e8f0; border-radius: 6px; overflow: hidden; margin-top: 4px; }
+        .stat-fill { height: 100%; background: linear-gradient(90deg, #F472B6, #EC4899); width: 0%; transition: width 1.5s ease-out; }
+
+        /* --- QUEST BOARD --- */
+        .quest-board {
+            background: #FEF3C7; border: 4px solid #B45309; border-radius: 12px;
+            position: relative; box-shadow: inset 0 0 20px rgba(180, 83, 9, 0.2);
+        }
+        .quest-pin {
+            width: 20px; height: 20px; background: #EF4444; border-radius: 50%;
+            position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* --- CHAT BUBBLE --- */
+        .chat-bubble {
+            background: white; padding: 12px 16px; border-radius: 16px;
+            position: relative; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            max-width: 85%;
+        }
+        .chat-left { border-bottom-left-radius: 4px; margin-right: auto; }
+        .chat-right { background: #DBEAFE; border-bottom-right-radius: 4px; margin-left: auto; text-align: right; }
+
+        /* --- MUSIC TOGGLE (HEADPHONES) --- */
+        .music-toggle {
+            position: fixed; top: 20px; right: 20px; z-index: 100;
+            background: white; border: 2px solid var(--anime-dark);
+            width: 45px; height: 45px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 4px 4px 0 var(--anime-dark); cursor: pointer;
+        }
+        .music-toggle:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--anime-dark); }
+        
+        .typewriter::after { content: '|'; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- AUDIO (Anime Opening Style) -->
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/11/22/audio_febc508520.mp3?filename=upbeat-pop-126296.mp3" type="audio/mp3">
+    </audio>
+
+    <!-- FLOATING CLOUDS BG -->
+    <div class="cloud" style="width: 120px; height: 40px; top: 10%; animation-duration: 25s;"></div>
+    <div class="cloud" style="width: 180px; height: 60px; top: 30%; animation-duration: 35s; animation-delay: -10s;"></div>
+    <div class="cloud" style="width: 100px; height: 35px; top: 70%; animation-duration: 20s; animation-delay: -5s;"></div>
+
+    <!-- SAKURA PARTICLES -->
+    <div id="sakura-container"></div>
+
+    <!-- MUSIC BUTTON -->
+    <div class="music-toggle" onclick="toggleMusic()">
+        <i id="music-icon" class="fas fa-music text-pink-500 text-xl"></i>
+    </div>
+
+    <!-- 1. START SCREEN (GAME TITLE) -->
+    <div id="start-screen">
+        <div class="text-center px-6 relative">
+            <div class="bg-white/20 backdrop-blur-sm p-8 rounded-3xl border-4 border-white shadow-xl relative overflow-hidden">
+                <div class="absolute -top-10 -left-10 w-24 h-24 bg-yellow-300 rounded-full opacity-50"></div>
+                
+                <p class="text-white font-bold tracking-widest text-sm mb-2 drop-shadow-md">THE WEDDING ANIMATION</p>
+                <h1 class="anime-title mb-6 leading-none">Diana <br>&<br> Ikbal</h1>
+                
+                <p class="text-white mb-8 font-bold text-lg drop-shadow-md">Episode 1: The Beginning</p>
+                
+                <div class="mb-4">
+                    <p class="text-xs text-white mb-1">Guest Player:</p>
+                    <div class="bg-white text-blue-600 font-bold px-4 py-2 rounded-lg inline-block border-2 border-blue-600 shadow-sm" id="guest-name">
+                        Tamu Undangan
+                    </div>
+                </div>
+
+                <button onclick="startGame()" class="start-btn pulse-anim">
+                    <i class="fas fa-play mr-2"></i> START
+                </button>
+            </div>
+            <p class="text-white/80 text-xs mt-6 font-bold">© 2026 Production. All rights reserved.</p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main id="main-content" class="hidden pb-24">
+        
+        <!-- EPISODE 1: INTRO (VISUAL NOVEL) -->
+        <section id="intro" class="min-h-[80vh] flex flex-col justify-end p-4 relative">
+            <!-- Illustration Area -->
+            <div class="absolute inset-0 flex items-center justify-center z-[-1] mt-[-20%]">
+                 <!-- Couple Illustration / Photo with Filter -->
+                 <div class="relative w-72 h-72">
+                     <div class="absolute inset-0 bg-blue-500 rounded-full opacity-20 blur-3xl animate-pulse"></div>
+                     <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover rounded-full border-4 border-white shadow-lg" style="object-position: top;">
+                 </div>
+            </div>
+
+            <!-- Dialogue Box -->
+            <div class="vn-box p-6 mb-4 animate-bounce-in-up" data-aos="fade-up">
+                <div class="vn-name-tag">Narrator</div>
+                <p id="dialogue-text" class="text-lg leading-relaxed min-h-[80px] typewriter"></p>
+                <div class="triangle-next" onclick="nextDialogue()"></div>
+            </div>
+        </section>
+
+        <!-- EPISODE 2: CHARACTER SELECT (PROFILE) -->
+        <section class="py-10 px-4">
+            <div class="flex items-center gap-2 mb-6">
+                <div class="w-2 h-8 bg-blue-500 rounded"></div>
+                <h2 class="text-2xl font-black text-slate-800 uppercase italic">Choose Character</h2>
+            </div>
+
+            <!-- Bride Card -->
+            <div class="char-card mb-8 relative" data-aos="fade-right">
+                <div class="absolute top-2 right-2 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded">LV. 26</div>
+                <div class="h-48 overflow-hidden bg-pink-100 relative">
+                    <img src="nikah2.png" onerror="this.src='https://placehold.co/400x300/pink/white?text=Bride'" class="w-full h-full object-cover object-top">
+                    <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-pink-500/50 to-transparent h-20"></div>
+                </div>
+                <div class="p-4">
+                    <h3 class="text-xl font-black text-pink-600">Nurdiana R. Hrp</h3>
+                    <p class="text-sm text-gray-500 font-bold mb-3">Class: The Bride</p>
+                    
+                    <!-- Stats -->
+                    <div class="space-y-2 text-xs font-bold text-gray-600">
+                        <div>
+                            <div class="flex justify-between"><span>Kindness</span><span>99/100</span></div>
+                            <div class="stat-bar"><div class="stat-fill" style="width: 99%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between"><span>Beauty</span><span>100/100</span></div>
+                            <div class="stat-bar"><div class="stat-fill bg-blue-400" style="width: 100%"></div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-dashed border-gray-300">
+                        <p class="text-xs text-gray-500">Parent Quest:</p>
+                        <p class="font-bold text-sm">Bpk. Ramadhan Harahap (Alm) & Ibu Sakdiah Nasution</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Groom Card -->
+            <div class="char-card" data-aos="fade-left">
+                <div class="absolute top-2 right-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">LV. 27</div>
+                <div class="h-48 overflow-hidden bg-blue-100 relative">
+                    <img src="nikah1.png" onerror="this.src='https://placehold.co/400x300/blue/white?text=Groom'" class="w-full h-full object-cover object-top">
+                    <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-blue-500/50 to-transparent h-20"></div>
+                </div>
+                <div class="p-4">
+                    <h3 class="text-xl font-black text-blue-600">M. Ikbal Rambe</h3>
+                    <p class="text-sm text-gray-500 font-bold mb-3">Class: The Groom</p>
+                    
+                    <!-- Stats -->
+                    <div class="space-y-2 text-xs font-bold text-gray-600">
+                         <div>
+                            <div class="flex justify-between"><span>Loyalty</span><span>100/100</span></div>
+                            <div class="stat-bar"><div class="stat-fill bg-green-400" style="width: 100%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between"><span>Patience</span><span>95/100</span></div>
+                            <div class="stat-bar"><div class="stat-fill bg-yellow-400" style="width: 95%"></div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-dashed border-gray-300">
+                        <p class="text-xs text-gray-500">Parent Quest:</p>
+                        <p class="font-bold text-sm">Bpk. Tohiruddin Rambe (Alm) & Ibu Nurlaila Murni Nasution</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EPISODE 3: QUEST BOARD (EVENTS) -->
+        <section class="py-10 px-4">
+            <div class="quest-board p-6 transform -rotate-1">
+                <div class="quest-pin"></div>
+                <h2 class="text-center font-black text-2xl text-yellow-900 mb-2 uppercase" style="font-family: 'Bangers'">Main Quest</h2>
+                <p class="text-center text-sm font-bold text-yellow-800 mb-6">"The Sacred Union"</p>
+
+                <!-- Quest Item 1 -->
+                <div class="bg-white p-4 rounded-lg border-2 border-yellow-700 shadow-sm mb-4 relative" data-aos="zoom-in">
+                    <div class="absolute -left-2 -top-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow transform -rotate-12">REQUIRED</div>
+                    <div class="flex items-start gap-4">
+                        <div class="bg-yellow-100 p-2 rounded-lg text-yellow-700"><i class="fas fa-ring text-2xl"></i></div>
+                        <div>
+                            <h4 class="font-black text-lg text-gray-800">Akad Nikah</h4>
+                            <p class="text-xs font-bold text-gray-500">18 Jan 2026 • 08:00 WIB</p>
+                            <p class="text-xs text-gray-600 mt-1 italic">Location: Kediaman Mempelai Wanita</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quest Item 2 -->
+                <div class="bg-white p-4 rounded-lg border-2 border-yellow-700 shadow-sm" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="absolute -right-2 -top-2 bg-blue-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow transform rotate-12">PARTY</div>
+                    <div class="flex items-start gap-4">
+                        <div class="bg-blue-100 p-2 rounded-lg text-blue-700"><i class="fas fa-glass-cheers text-2xl"></i></div>
+                        <div>
+                            <h4 class="font-black text-lg text-gray-800">Resepsi</h4>
+                            <p class="text-xs font-bold text-gray-500">18 Jan 2026 • 10:00 WIB</p>
+                            <p class="text-xs text-gray-600 mt-1 italic">Location: Padangsidimpuan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <a href="https://maps.app.goo.gl/t7bgkrNbsm66m2pj9" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full border-b-4 border-blue-700 active:border-b-0 active:translate-y-1 transition inline-block">
+                        <i class="fas fa-map-marked-alt mr-2"></i> Open Map
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- EPISODE 4: LOOT BOX (GIFT) -->
+        <section class="py-10 px-4">
+            <div class="bg-slate-800 rounded-2xl p-6 text-white text-center border-4 border-slate-600 shadow-2xl relative overflow-hidden" data-aos="flip-up">
+                <!-- Background Pattern -->
+                <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                
+                <h2 class="font-black text-2xl text-yellow-400 mb-1 relative z-10" style="font-family: 'Bangers'">TREASURE CHEST</h2>
+                <p class="text-xs text-slate-300 mb-6 relative z-10">Drop your support items here!</p>
+
+                <div class="bg-slate-700/50 p-4 rounded-xl border border-slate-500 mb-4 relative z-10">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold text-blue-300">ITEM: MANDIRI CARD</span>
+                        <i class="fas fa-credit-card text-blue-300"></i>
+                    </div>
+                    <p class="font-mono text-xl text-white tracking-widest font-bold">1330 0127 1036 4</p>
+                    <p class="text-xs text-slate-400 text-left mt-1">Owner: M. Ikbal Rambe</p>
+                    <button onclick="copyText('1330012710364')" class="w-full mt-3 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded text-xs transition">LOOT (COPY)</button>
+                </div>
+
+                <div class="bg-slate-700/50 p-4 rounded-xl border border-slate-500 relative z-10">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold text-green-300">ITEM: BSI CARD</span>
+                        <i class="fas fa-credit-card text-green-300"></i>
+                    </div>
+                    <p class="font-mono text-xl text-white tracking-widest font-bold">7292 9942 86</p>
+                    <p class="text-xs text-slate-400 text-left mt-1">Owner: Nurdiana R. Hrp</p>
+                    <button onclick="copyText('7292994286')" class="w-full mt-3 bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded text-xs transition">LOOT (COPY)</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- EPISODE 5: GUILD CHAT (WISHES) -->
+        <section class="py-10 px-4 mb-10">
+            <h2 class="text-center font-black text-2xl text-slate-800 mb-6 italic">#GUILD_CHAT</h2>
+            
+            <div class="bg-white rounded-2xl shadow-lg border-2 border-slate-200 overflow-hidden">
+                <!-- Chat History -->
+                <div id="chat-history" class="h-64 overflow-y-auto p-4 bg-slate-50 space-y-3">
+                    <div class="chat-bubble chat-left">
+                        <p class="text-xs font-bold text-blue-500 mb-1">System Bot</p>
+                        <p class="text-sm text-gray-700">Welcome to the wedding chat room! Send your prayers.</p>
+                    </div>
+                    <!-- Sample Chat -->
+                    <div class="chat-bubble chat-left">
+                         <p class="text-xs font-bold text-pink-500 mb-1">Nakama_01</p>
+                         <p class="text-sm text-gray-700">Omedetou! Semoga samawa ya!</p>
+                    </div>
+                </div>
+                
+                <!-- Chat Input -->
+                <div class="p-3 bg-white border-t border-slate-200">
+                    <form onsubmit="event.preventDefault(); sendChat();" class="flex gap-2">
+                        <input type="text" id="chatName" placeholder="Nick" class="w-1/4 bg-slate-100 rounded-lg px-3 py-2 text-xs font-bold focus:outline-none border border-transparent focus:border-blue-400">
+                        <input type="text" id="chatMsg" placeholder="Message..." class="flex-1 bg-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none border border-transparent focus:border-blue-400">
+                        <button type="submit" class="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 transition"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="text-center py-6 text-xs font-bold text-slate-500">
+            <p>THANKS FOR PLAYING!</p>
+            <p class="mt-1">Diana & Ikbal Wedding Arc End.</p>
+        </footer>
+
+        <!-- BOTTOM NAV (GAME HUD) -->
+        <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800/90 backdrop-blur text-white px-6 py-3 rounded-full flex gap-8 shadow-2xl z-50 border-2 border-slate-600">
+            <a href="#" onclick="window.scrollTo(0,0)" class="text-2xl hover:text-yellow-400 transition hover:scale-110"><i class="fas fa-home"></i></a>
+            <a href="#" onclick="window.scrollTo(0, 1000)" class="text-2xl hover:text-yellow-400 transition hover:scale-110"><i class="fas fa-user-circle"></i></a>
+            <a href="#" onclick="window.scrollTo(0, 2000)" class="text-2xl hover:text-yellow-400 transition hover:scale-110"><i class="fas fa-scroll"></i></a>
+        </div>
+
+    </main>
+    
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/80 text-white px-6 py-4 rounded-xl z-[10000] hidden flex-col items-center">
+        <i class="fas fa-check-circle text-green-400 text-3xl mb-2"></i>
+        <span class="font-bold">ITEM COPIED!</span>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // 1. SAKURA GENERATOR
+        function createSakura() {
+            const container = document.getElementById('sakura-container');
+            const particle = document.createElement('div');
+            particle.classList.add('sakura');
+            
+            const size = Math.random() * 15 + 10;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${Math.random() * 100}vw`;
+            particle.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            
+            container.appendChild(particle);
+            
+            setTimeout(() => { particle.remove(); }, 5000);
+        }
+        setInterval(createSakura, 300);
+
+        // 2. DIALOGUE SYSTEM
+        const dialogues = [
+            "Tahun 2018... Di sebuah kampus yang ramai, takdir mempertemukan kami.",
+            "Bukan cinta pandangan pertama, tapi sebuah cerita yang tumbuh perlahan.",
+            "Januari 2026, kami siap memulai 'Arc' baru dalam hidup kami.",
+            "Dan kami ingin Anda menjadi bagian dari cerita ini..."
+        ];
+        let currentLine = 0;
+        let isTyping = false;
+
+        function typeWriter(text, elementId, speed = 50) {
+            if(isTyping) return;
+            isTyping = true;
+            let i = 0;
+            const elem = document.getElementById(elementId);
+            elem.innerHTML = "";
+            elem.classList.add('typewriter');
+            
+            function type() {
+                if (i < text.length) {
+                    elem.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    isTyping = false;
+                    elem.classList.remove('typewriter');
+                }
+            }
+            type();
+        }
+
+        function nextDialogue() {
+            if(isTyping) return; // Prevent skipping while typing
+            currentLine++;
+            if(currentLine < dialogues.length) {
+                typeWriter(dialogues[currentLine], 'dialogue-text');
+            } else {
+                // End of dialogue, maybe scroll down
+                document.getElementById('intro').scrollIntoView({behavior: "smooth", block: "end"});
+            }
+        }
+
+        // 3. START GAME
+        function startGame() {
+            const startScreen = document.getElementById('start-screen');
+            const mainContent = document.getElementById('main-content');
+            
+            startScreen.style.opacity = '0';
+            startScreen.style.transition = 'opacity 0.8s';
+            
+            setTimeout(() => {
+                startScreen.style.display = 'none';
+                mainContent.classList.remove('hidden');
+                
+                // Play Music
+                toggleMusic();
+                
+                // Start Dialogue
+                typeWriter(dialogues[0], 'dialogue-text');
+                
+                // Init AOS
+                AOS.init();
+            }, 800);
+        }
+
+        // 4. MUSIC & CHAT
+        function toggleMusic() {
+            const audio = document.getElementById('bg-music');
+            const icon = document.getElementById('music-icon');
+            if(audio.paused) {
+                audio.play(); icon.classList.remove('fa-volume-mute'); icon.classList.add('fa-music');
+            } else {
+                audio.pause(); icon.classList.add('fa-volume-mute'); icon.classList.remove('fa-music');
+            }
+        }
+
+        function sendChat() {
+            const name = document.getElementById('chatName').value || 'Anonymous';
+            const msg = document.getElementById('chatMsg').value;
+            const history = document.getElementById('chat-history');
+            
+            if(msg) {
+                const bubble = `<div class="chat-bubble chat-right"><p class="text-xs font-bold text-slate-500 mb-1">${name}</p><p class="text-sm text-gray-700">${msg}</p></div>`;
+                history.insertAdjacentHTML('beforeend', bubble);
+                document.getElementById('chatMsg').value = '';
+                history.scrollTop = history.scrollHeight;
+            }
+        }
+
+        function copyText(txt) {
+            navigator.clipboard.writeText(txt);
+            const toast = document.getElementById('toast');
+            toast.style.display = 'flex';
+            setTimeout(() => { toast.style.display = 'none'; }, 2000);
+        }
+        
+        // URL PARAMS
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const guest = urlParams.get('to');
+            if(guest) document.getElementById('guest-name').innerText = guest;
+        });
+    </script>
+</body>
+</html>
